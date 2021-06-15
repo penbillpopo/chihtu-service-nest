@@ -6,14 +6,11 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorityModule } from './authority/authority.module';
-import { AnalysisModule } from './analysis/analysis.module';
-import { OperationModule } from './operation/operation.module';
 import { ProductModule } from './product/product.module';
 import { CommandModule } from 'nestjs-command';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { EventModule } from './event/event.module';
 
 @Module({
   imports: [
@@ -36,10 +33,7 @@ import { EventModule } from './event/event.module';
     UserModule,
     AuthModule,
     AuthorityModule,
-    AnalysisModule,
-    OperationModule,
     ProductModule,
-    EventModule,
     CommandModule,
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
