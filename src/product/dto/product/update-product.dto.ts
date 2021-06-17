@@ -55,6 +55,16 @@ export class UpdateProductDTO {
   number: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
+  headImage: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  prodImages: string;
+
+  @ApiProperty()
   @IsNumber()
   status: number;
 

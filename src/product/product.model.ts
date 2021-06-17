@@ -12,6 +12,8 @@ export const productSchema = new mongoose.Schema(
     price: { type: Number, required: false },
     count: { type: Number, required: false },
     number: { type: String, required: false },
+    headImage: { type: String, required: false },
+    prodImages: { type: String, required: false },
     status: { type: Number, required: true },
   },
   {
@@ -32,6 +34,8 @@ export interface ProductModel extends mongoose.Document {
   price: number;
   count: number;
   number: string;
+  headImage: string;
+  prodImages: string;
   status: number;
   createdAt: number;
   updatedAt: number;

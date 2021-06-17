@@ -14,8 +14,23 @@ import { DeleteProdCategoryDTO } from './dto/prodCategory/delete-prodCategory.dt
 import { DeleteShipCategoryDTO } from './dto/shipCategory/delete-shipCategory.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Controller, Post, UseInterceptors,
-     UsePipes, ValidationPipe, Body,Get,Query,Put,Delete } from '@nestjs/common';
+import { Controller, Post, UseInterceptors,UploadedFile,
+     UsePipes, ValidationPipe, Body,Get,Query,Put,Delete, Param, Res} from '@nestjs/common';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path = require('path');
+import { join } from 'path';
+import { of } from 'rxjs';
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads/product',
+        filename: (req, file, cb) => {
+            const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${filename}${extension}`)
+        }
+    })
+}
 
 @ApiTags('product')
 @Controller('product')
@@ -34,6 +49,20 @@ export class ProductController {
             return { success: false, data: null, msg: '新增失敗' };
         }
     }
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file', storage))
+    uploadFile(@UploadedFile() file){
+        if(file){
+            return { success: true, data: {fileName: file.filename}, msg: '新增成功' };
+        }else{
+            return { success: false, data: null, msg: '新增失敗' };
+        }
+    }
+    @Get('image')
+    getProdImage(@Query() query, @Res() res) {
+        return of(res.sendFile(join(process.cwd(), 'uploads/product/' + query.name)));
+    }
+
     @Get()
     @ApiOperation({description:"取得產品"})
     async getProducts(@Query() getProductDTO:GetProductDTO) {

@@ -73,6 +73,8 @@ export class ProductService {
             name: product.name,
             count: product.count,
             number: product.number,
+            headImage: product.headImage,
+            prodImages: product.prodImages,
             status: product.status,
             createdAt: moment(new Date(product.createdAt)).format(
                 'YYYY/MM/DD hh:mm:ss',
@@ -98,6 +100,8 @@ export class ProductService {
             price: product.price,
             count: product.count,
             number: product.number,
+            headImage: product.headImage,
+            prodImages: product.prodImages,
             status: product.status,
             spec: []
         }
@@ -119,7 +123,7 @@ export class ProductService {
     }
     async updateProduct(updateProductDTO: UpdateProductDTO) {
         const { id, name, firstCategory,secondCategory,detail,hasSpec,firstSpec,secondSpec,
-            price,count,number,status,spec } = updateProductDTO;
+            price,count,number,status,spec,headImage,prodImages } = updateProductDTO;
         const updateProduct = await this.productModel.findById(id).exec();
         if (updateProduct) {
             updateProduct.name = name;
@@ -128,6 +132,8 @@ export class ProductService {
             updateProduct.detail = detail;
             updateProduct.hasSpec = hasSpec;
             updateProduct.status = status;
+            updateProduct.headImage = headImage;
+            updateProduct.prodImages = prodImages;
             await this.deleteSpec(id)
             if(hasSpec===1){
                 updateProduct.price = null;
