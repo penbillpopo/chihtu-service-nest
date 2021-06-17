@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
-import {IProdSpec} from './IProdSpec'
+import {IProdSpec} from '../../format/IProdSpec'
 export class CreateProductDTO {
   @ApiProperty()
   @IsString()

@@ -1,14 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, IsOptional,IsArray } from 'class-validator';
-import {IProdSpec} from './IProdSpec'
+import {IProdSpec} from '../../format/IProdSpec'
 
-export class UpdateProductDTO {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  id: string;
-  
+export class UpdateProductDTO {  
   @ApiProperty()
   @IsString()
   name: string;

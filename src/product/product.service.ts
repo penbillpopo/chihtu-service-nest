@@ -14,12 +14,9 @@ import { GetShipCategoryDTO } from './dto/shipCategory/get-shipCategory.dto';
 import { UpdateProductDTO } from './dto/product/update-product.dto';
 import { UpdateProdCategoryDTO } from './dto/prodCategory/update-prodCategory.dto';
 import { UpdateShipCategoryDTO } from './dto/shipCategory/update-shipCategory.dto';
-import { DeleteProductDTO } from './dto/product/delete-product.dto';
-import { DeleteProdCategoryDTO } from './dto/prodCategory/delete-prodCategory.dto';
-import { DeleteShipCategoryDTO } from './dto/shipCategory/delete-shipCategory.dto';
-import { GetProductDetailDTO } from './dto/product/get-productDetail.dto';
-import {IProdSpec} from './dto/product/IProdSpec'
+import { IProdSpec } from './format/IProdSpec'
 import { Model } from 'mongoose';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import * as moment from 'moment';
 
 @Injectable()
@@ -85,8 +82,8 @@ export class ProductService {
           }));
         return {content:data,total:total};
     }
-    async getProductDetail(getProductDetailDTO:GetProductDetailDTO) {
-        const { id } = getProductDetailDTO
+    async getProductDetail(idDto:IdDTO) {
+        const { id } = idDto
         const product = await this.productModel.findById(id)
         const data = {
             id: product.id,
@@ -121,9 +118,10 @@ export class ProductService {
         }
         return {content:data,total:1};
     }
-    async updateProduct(updateProductDTO: UpdateProductDTO) {
-        const { id, name, firstCategory,secondCategory,detail,hasSpec,firstSpec,secondSpec,
+    async updateProduct(idDto:IdDTO,updateProductDTO: UpdateProductDTO) {
+        const { name, firstCategory,secondCategory,detail,hasSpec,firstSpec,secondSpec,
             price,count,number,status,spec,headImage,prodImages } = updateProductDTO;
+        const { id } = idDto
         const updateProduct = await this.productModel.findById(id).exec();
         if (updateProduct) {
             updateProduct.name = name;
@@ -156,8 +154,8 @@ export class ProductService {
             throw new NotFoundException();
         }
     }
-    async deleteProduct(deleteProductDTO: DeleteProductDTO) {
-        const { id } = deleteProductDTO;
+    async deleteProduct(idDto:IdDTO) {
+        const { id } = idDto;
         const res = await this.productModel.deleteOne({ _id: id }).exec();
         if (res.n === 0) {
           return false;
@@ -229,8 +227,9 @@ export class ProductService {
           }));
         return {content:data,total:total};
     }
-    async updateProdCategory(updateProdCategoryDTO: UpdateProdCategoryDTO) {
-        const { id, name,secondCategory } = updateProdCategoryDTO;
+    async updateProdCategory(idDto:IdDTO,updateProdCategoryDTO: UpdateProdCategoryDTO) {
+        const { id } = idDto;
+        const { name,secondCategory } = updateProdCategoryDTO;
         const updateCategory = await this.prodCategoryModel.findById(id).exec();
         if (updateCategory) {
             updateCategory.name = name;
@@ -244,8 +243,8 @@ export class ProductService {
             throw new NotFoundException();
         }
     }
-    async deleteProdCategory(deleteProdCategoryDTO: DeleteProdCategoryDTO) {
-        const { id } = deleteProdCategoryDTO;
+    async deleteProdCategory(idDto:IdDTO) {
+        const { id } = idDto;
         const res = await this.prodCategoryModel.deleteOne({ _id: id }).exec();
         await this.deleteAllSubCategory(id)
         if (res.n === 0) {
@@ -301,8 +300,9 @@ export class ProductService {
           }));
         return {content:data,total:total};
     }
-    async updateShipCategory(updateShipCategoryDTO: UpdateShipCategoryDTO) {
-        const { id, name } = updateShipCategoryDTO;
+    async updateShipCategory(idDto:IdDTO,updateShipCategoryDTO: UpdateShipCategoryDTO) {
+        const { id } = idDto;
+        const { name } = updateShipCategoryDTO;
         const updateCategory = await this.shipCategoryModel.findById(id).exec();
         if (updateCategory) {
             updateCategory.name = name;
@@ -312,8 +312,8 @@ export class ProductService {
             throw new NotFoundException();
         }
     }
-    async deleteShipCategory(deleteShipCategoryDTO: DeleteShipCategoryDTO) {
-        const { id } = deleteShipCategoryDTO;
+    async deleteShipCategory(idDto:IdDTO) {
+        const { id } = idDto;
         const res = await this.shipCategoryModel.deleteOne({ _id: id }).exec();
         if (res.n === 0) {
           return false;

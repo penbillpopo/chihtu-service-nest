@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { LoginDTO } from './dto/login.dto';
 import {
   Controller,
@@ -19,6 +19,7 @@ export class AuthController {
   @Post('login')
   @UseInterceptors(FileInterceptor('body'))
   @UsePipes(ValidationPipe)
+  @ApiOperation({description:"登入"})
   async login(@Body() loginDTO: LoginDTO, @Response() res) {
     const user = await this.authService.login(loginDTO);
     if (user) {      

@@ -3,24 +3,38 @@ import { CreateProductDTO } from './dto/product/create-product.dto';
 import { CreateProdCategoryDTO } from './dto/prodCategory/create-prodCategory.dto';
 import { CreateShipCategoryDTO } from './dto/shipCategory/create-shipCategory.dto';
 import { GetProductDTO } from './dto/product/get-product.dto';
-import { GetProductDetailDTO } from './dto/product/get-productDetail.dto';
 import { GetProdCategoryDTO } from './dto/prodCategory/get-prodCategory.dto';
 import { GetShipCategoryDTO } from './dto/shipCategory/get-shipCategory.dto';
 import { UpdateProductDTO } from './dto/product/update-product.dto';
 import { UpdateProdCategoryDTO } from './dto/prodCategory/update-prodCategory.dto';
 import { UpdateShipCategoryDTO } from './dto/shipCategory/update-shipCategory.dto';
-import { DeleteProductDTO } from './dto/product/delete-product.dto';
-import { DeleteProdCategoryDTO } from './dto/prodCategory/delete-prodCategory.dto';
-import { DeleteShipCategoryDTO } from './dto/shipCategory/delete-shipCategory.dto';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Controller, Post, UseInterceptors,UploadedFile,
-     UsePipes, ValidationPipe, Body,Get,Query,Put,Delete, Param, Res} from '@nestjs/common';
+     UsePipes, ValidationPipe, Body,Get,Query,Put,Delete, Res} from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
 import { of } from 'rxjs';
+export const ApiFile = (fileName: string = 'file'): MethodDecorator => (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) => {
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          [fileName]: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    })(target, propertyKey, descriptor);
+  };
 export const storage = {
     storage: diskStorage({
         destination: './uploads/product',
@@ -50,6 +64,8 @@ export class ProductController {
         }
     }
     @Post('upload')
+    @ApiConsumes('multipart/form-data')
+    @ApiFile()
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file){
         if(file){
@@ -75,8 +91,8 @@ export class ProductController {
     }
     @Get('/detail')
     @ApiOperation({description:"取得詳細產品"})
-    async getProductDetail(@Query() getProductDetailDTO:GetProductDetailDTO) {
-        const product = await this.productService.getProductDetail(getProductDetailDTO)
+    async getProductDetail(@Query() idDto:IdDTO) {
+        const product = await this.productService.getProductDetail(idDto)
         if (product) {
             return { success: true, data: product, msg: '搜尋成功' };
         } else {
@@ -87,8 +103,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"修改使用者"})
-    async updateUser(@Body() updateProductDTO: UpdateProductDTO) {
-        const users = await this.productService.updateProduct(updateProductDTO);
+    async updateUser(@Query() idDto:IdDTO,@Body() updateProductDTO: UpdateProductDTO) {
+        const users = await this.productService.updateProduct(idDto,updateProductDTO);
         if (users) {
         return { success: true, data: null, msg: '更新成功' };
         } else {
@@ -99,8 +115,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"刪除使用者"})
-    async deleteUser(@Body() deleteProductDTO: DeleteProductDTO) {
-      const product = await this.productService.deleteProduct(deleteProductDTO);
+    async deleteUser(@Query() idDto:IdDTO) {
+      const product = await this.productService.deleteProduct(idDto);
       if (product) {
         return { success: true, data: null, msg: '刪除成功' };
       } else {
@@ -134,8 +150,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"修改第一級分類"})
-    async updateProdCategory(@Body() updateProdCategoryDTO: UpdateProdCategoryDTO) {
-        const categories = await this.productService.updateProdCategory(updateProdCategoryDTO);
+    async updateProdCategory(@Query() idDto:IdDTO,@Body() updateProdCategoryDTO: UpdateProdCategoryDTO) {
+        const categories = await this.productService.updateProdCategory(idDto,updateProdCategoryDTO);
         if (categories) {
         return { success: true, data: null, msg: '更新成功' };
         } else {
@@ -146,8 +162,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"刪除使用者"})
-    async deleteProdCategory(@Body() deleteProdCategoryDTO: DeleteProdCategoryDTO) {
-      const categories = await this.productService.deleteProdCategory(deleteProdCategoryDTO);
+    async deleteProdCategory(@Query() idDto:IdDTO) {
+      const categories = await this.productService.deleteProdCategory(idDto);
       if (categories) {
         return { success: true, data: null, msg: '刪除成功' };
       } else {
@@ -194,8 +210,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"修改運送分類"})
-    async updateShipCategory(@Body() updateShipCategoryDTO: UpdateShipCategoryDTO) {
-        const categories = await this.productService.updateShipCategory(updateShipCategoryDTO);
+    async updateShipCategory(@Query() idDto:IdDTO,@Body() updateShipCategoryDTO: UpdateShipCategoryDTO) {
+        const categories = await this.productService.updateShipCategory(idDto,updateShipCategoryDTO);
         if (categories) {
         return { success: true, data: null, msg: '更新成功' };
         } else {
@@ -206,8 +222,8 @@ export class ProductController {
     @UseInterceptors(FileInterceptor('body'))
     @UsePipes(ValidationPipe)
     @ApiOperation({description:"刪除運送分類"})
-    async deleteShipCategory(@Body() deleteShipCategoryDTO: DeleteShipCategoryDTO) {
-      const categories = await this.productService.deleteShipCategory(deleteShipCategoryDTO);
+    async deleteShipCategory(@Query() idDto:IdDTO) {
+      const categories = await this.productService.deleteShipCategory(idDto);
       if (categories) {
         return { success: true, data: null, msg: '刪除成功' };
       } else {

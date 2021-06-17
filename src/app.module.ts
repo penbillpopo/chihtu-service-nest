@@ -9,8 +9,7 @@ import { AuthorityModule } from './authority/authority.module';
 import { ProductModule } from './product/product.module';
 import { CommandModule } from 'nestjs-command';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+// import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -36,10 +35,10 @@ import { join } from 'path';
     ProductModule,
     CommandModule,
     ScheduleModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
-      serveRoot: '',
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'client'),
+    //   serveRoot: '',
+    // }),
   ],
   controllers: [AppController],
   providers: [AppService],

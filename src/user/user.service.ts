@@ -1,7 +1,7 @@
 import { GetUserDTO } from './dto/get-user.dto';
-import { DeleteUserDTO } from './dto/delete-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -70,8 +70,9 @@ export class UserService {
     const total = await this.userModel.count({})
     return {content:resArr,total:total};
   }
-  async updateUser(updateUserDTO: UpdateUserDTO) {
-    const { id, account,name, status, roleId } = updateUserDTO;
+  async updateUser(idDto:IdDTO,updateUserDTO: UpdateUserDTO) {
+    const { id } = idDto;
+    const { account,name, status, roleId } = updateUserDTO;
     const updateUser = await this.findUserById(id);
     if (updateUser) {
       updateUser.account = account;
@@ -84,8 +85,8 @@ export class UserService {
       throw new NotFoundException();
     }
   }
-  async deleteUser(deleteUserDTO: DeleteUserDTO) {
-    const { id } = deleteUserDTO;
+  async deleteUser(idDTO: IdDTO) {
+    const { id } = idDTO;
     const res = await this.userModel.deleteOne({ _id: id }).exec();
     if (res.n === 0) {
       return false;

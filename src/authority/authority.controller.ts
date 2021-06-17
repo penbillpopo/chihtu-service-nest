@@ -1,8 +1,8 @@
 import { GetRoleDTO } from './dto/get-role.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { DeleteRoleDTO } from './dto/delete-role.dto';
 import { UpdateRoleDTO } from './dto/update-role.dto';
 import { CreateRoleDTO } from './dto/create-role.dto';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import {
   Controller,
   Post,
@@ -28,7 +28,7 @@ export class AuthorityController {
     private readonly userService: UserService,
   ) {}
 
-  @Post('/role')
+  @Post()
   @ApiOperation({summary:"",description:"新增權限設定"})
   @UseInterceptors(FileInterceptor('body'))
   @UsePipes(ValidationPipe)
@@ -41,7 +41,7 @@ export class AuthorityController {
       return { success: false, data: null, msg: '新增失敗' };
     }
   }
-  @Get('/role')
+  @Get()
   @ApiOperation({summary:"",description:"取得權限設定"})
   @UsePipes(ValidationPipe)
   async getRole(@Query() getRoleDTO:GetRoleDTO,@Request() req) {
@@ -53,7 +53,41 @@ export class AuthorityController {
       return { success: false, data: null, msg: '查無資料' };
     }
   }
-  @Get('/role/select')
+  @Put()
+  @ApiOperation({summary:"",description:"修改權限設定"})
+  @UseInterceptors(FileInterceptor('body'))
+  @UsePipes(ValidationPipe)
+  async updateRole(@Query() idDto:IdDTO,@Body() updateRoleDTO: UpdateRoleDTO,@Request() req) {
+    const currentRoleLevel = await this.authorityService.getRoleLevel(req)
+    const Roles = await this.authorityService.updateRole(idDto,updateRoleDTO,currentRoleLevel+1);
+    if (Roles) {
+      return { success: true, data: null, msg: '更新成功' };
+    } else {
+      return { success: false, data: null, msg: '更新失敗' };
+    }
+  }
+
+  @Delete()
+  @ApiOperation({summary:"",description:"刪除權限設定"})
+  @UseInterceptors(FileInterceptor('body'))
+  @UsePipes(ValidationPipe)
+  async deleteRole(@Query() idDto:IdDTO) {
+    const { id } = idDto;
+    const user = await this.userService.findUser({ roleId: id });
+    if (user) {
+      return {
+        success: false,
+        data: null,
+        msg: '尚有使用者使用此權限，刪除失敗',
+      };
+    } else {
+      const Role = await this.authorityService.deleteRole(idDto);
+      if (Role) return { success: true, data: null, msg: '刪除成功' };
+      else return { success: false, data: null, msg: '刪除失敗' };
+    }
+  }
+
+  @Get('/select')
   @ApiOperation({summary:"",description:"取得權限選項"})
   @UsePipes(ValidationPipe)
   async getRoleSelect(@Request() req) {
@@ -66,37 +100,4 @@ export class AuthorityController {
     }
   }
 
-  @Put('/role')
-  @ApiOperation({summary:"",description:"修改權限設定"})
-  @UseInterceptors(FileInterceptor('body'))
-  @UsePipes(ValidationPipe)
-  async updateRole(@Body() updateRoleDTO: UpdateRoleDTO,@Request() req) {
-    const currentRoleLevel = await this.authorityService.getRoleLevel(req)
-    const Roles = await this.authorityService.updateRole(updateRoleDTO,currentRoleLevel+1);
-    if (Roles) {
-      return { success: true, data: null, msg: '更新成功' };
-    } else {
-      return { success: false, data: null, msg: '更新失敗' };
-    }
-  }
-
-  @Delete('/role')
-  @ApiOperation({summary:"",description:"刪除權限設定"})
-  @UseInterceptors(FileInterceptor('body'))
-  @UsePipes(ValidationPipe)
-  async deleteRole(@Body() deleteRoleDTO: DeleteRoleDTO) {
-    const { id } = deleteRoleDTO;
-    const user = await this.userService.findUser({ roleId: id });
-    if (user) {
-      return {
-        success: false,
-        data: null,
-        msg: '尚有使用者使用此權限，刪除失敗',
-      };
-    } else {
-      const Role = await this.authorityService.deleteRole(deleteRoleDTO);
-      if (Role) return { success: true, data: null, msg: '刪除成功' };
-      else return { success: false, data: null, msg: '刪除失敗' };
-    }
-  }
 }

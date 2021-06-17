@@ -1,7 +1,7 @@
 import { GetRoleDTO } from './dto/get-role.dto';
-import { DeleteRoleDTO } from './dto/delete-role.dto';
 import { UpdateRoleDTO } from './dto/update-role.dto';
 import { CreateRoleDTO } from './dto/create-role.dto';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -56,8 +56,9 @@ export class AuthorityService {
     }));
     return {content:data};
   }
-  async updateRole(updateRoleDTO: UpdateRoleDTO,roleLevel:number) {
-    const { id, name, roles } = updateRoleDTO;
+  async updateRole(idDto:IdDTO,updateRoleDTO: UpdateRoleDTO,roleLevel:number) {
+    const { id } = idDto;
+    const { name, roles } = updateRoleDTO;
     const role = await this.findRole(id);
     if (!role) throw new NotFoundException();
     else {
@@ -74,8 +75,8 @@ export class AuthorityService {
       return true;
     }
   }
-  async deleteRole(deleteRoleDTO: DeleteRoleDTO) {
-    const { id } = deleteRoleDTO;
+  async deleteRole(idDto:IdDTO) {
+    const { id } = idDto;
     const result = await this.authorityRolesModel.deleteOne({ _id: id }).exec();
     if (result.n === 0) {
       return false;

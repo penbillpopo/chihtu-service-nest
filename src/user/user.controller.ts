@@ -1,7 +1,7 @@
 import { GetUserDTO } from './dto/get-user.dto';
-import { DeleteUserDTO } from './dto/delete-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { IdDTO } from '../shared/dto/idDto.dto';
 import {
   Body,
   Controller,
@@ -13,13 +13,12 @@ import {
   Delete,
   Put,
   Query,
-  Request
+  Request,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthorityService } from 'src/authority/authority.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-
 import {
   ApiOperation, 
   ApiTags,
@@ -63,12 +62,12 @@ export class UserController {
       return { success: false, data: null, msg: '查無資料' };
     }
   }
-  @Put('')
+  @Put()
   @UseInterceptors(FileInterceptor('body'))
   @UsePipes(ValidationPipe)
   @ApiOperation({description:"修改使用者"})
-  async updateUser(@Body() updateUserDTO: UpdateUserDTO) {
-    const users = await this.userService.updateUser(updateUserDTO);
+  async updateUser(@Query() idDto:IdDTO, @Body() updateUserDTO: UpdateUserDTO) {
+    const users = await this.userService.updateUser(idDto,updateUserDTO);
     if (users) {
       return { success: true, data: null, msg: '更新成功' };
     } else {
@@ -80,8 +79,8 @@ export class UserController {
   @UseInterceptors(FileInterceptor('body'))
   @UsePipes(ValidationPipe)
   @ApiOperation({description:"刪除使用者"})
-  async deleteUser(@Body() deleteUserDTO: DeleteUserDTO) {
-    const users = await this.userService.deleteUser(deleteUserDTO);
+  async deleteUser(@Query() idDto:IdDTO) {
+    const users = await this.userService.deleteUser(idDto);
     if (users) {
       return { success: true, data: null, msg: '刪除成功' };
     } else {

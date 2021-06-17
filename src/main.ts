@@ -28,7 +28,7 @@ async function bootstrap() {
   
   //swagger
   const options = new DocumentBuilder()
-  .setTitle('PS2 API')
+  .setTitle('Chihtu API')
   .setDescription('')
   .setVersion('1.0')
   .build();
