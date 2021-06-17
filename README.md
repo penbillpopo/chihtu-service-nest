@@ -20,3 +20,8 @@ npm run start
 ```bash
 npm run start:dev
 ```
+
+
+## swagger-ui
+
+http://localhost:3000/api/docs/
